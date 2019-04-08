@@ -1,9 +1,14 @@
 package wlj.com.coolweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import wlj.com.coolweather.db.City;
 import wlj.com.coolweather.db.County;
@@ -65,7 +70,7 @@ public class JsonUtil {
                     JSONObject countyObj = countyList.getJSONObject(i);
                     County county = new County();
                     county.setCountyName(countyObj.getString("name"));
-                    county.setWeatherId(countyObj.getInt("weather_id"));
+                    county.setWeatherId(countyObj.getString("weather_id"));
                     county.setCityId(cityId);
                     county.save();
                 }

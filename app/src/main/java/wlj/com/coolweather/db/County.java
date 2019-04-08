@@ -1,6 +1,7 @@
 package wlj.com.coolweather.db;
 
 import org.litepal.crud.DataSupport;
+
 /**
  * 县/区的实体类
  */
@@ -8,7 +9,7 @@ public class County extends DataSupport {
     private int id;
     private String countyName;
     //当前区/县对应的天气id
-    private int weatherId;
+    private String weatherId;
     //当前区/县所属的城市id
     private int cityId;
 
@@ -28,11 +29,11 @@ public class County extends DataSupport {
         this.countyName = countyName;
     }
 
-    public int getWeatherId() {
+    public String getWeatherId() {
         return weatherId;
     }
 
-    public void setWeatherId(int weatherId) {
+    public void setWeatherId(String weatherId) {
         this.weatherId = weatherId;
     }
 

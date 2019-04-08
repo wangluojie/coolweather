@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,7 +68,8 @@ public class ChooseAreaFragment extends Fragment {
         chooseAreaTitle = view.findViewById(R.id.choose_area_title_text);
         chooseAreaBackBtn = view.findViewById(R.id.choose_area_back_btn);
         listView = view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
+        adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()),
+                android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
         return view;
     }
@@ -87,10 +90,10 @@ public class ChooseAreaFragment extends Fragment {
             if (currentLevel == LEVEL_COUNTY) {
                 queryCities();
             } else if (currentLevel == LEVEL_CITY) {
-                Log.d("ChooseAreaFragment", "开始查询省");
                 queryProvinces();
             }
         });
+        Log.d("ChooseAreaFragment", "开始查询省");
         queryProvinces();
     }
 
@@ -105,12 +108,12 @@ public class ChooseAreaFragment extends Fragment {
             dataList.clear();
             for (Province province : provinceList) {
                 dataList.add(province.getProvinceName());
+                Log.d("ChooseAreaFragment", province.getProvinceName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         } else {
-            Log.d("ChooseAreaFragment", "查询省");
             String address = "http://guolin.tech/api/china";
             queryFromServer(address, "province");
         }
@@ -153,6 +156,7 @@ public class ChooseAreaFragment extends Fragment {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
             String addrerss = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            Log.d("ChooseAreaFragment", "查询地区的地址:" + addrerss);
             queryFromServer(addrerss, "county");
         }
     }
@@ -184,9 +188,12 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 boolean result = false;
                 if (response.body() != null) {
-                    String responseStr = response.body().toString();
+                    String responseStr = response.body().string();
                     if ("province".equals(queryType)) {
+                        Log.d("ChooseAreaFragment", "response的body:" +
+                                TextUtils.isEmpty(responseStr));
                         result = JsonUtil.parseProvinceResponse(responseStr);
+                        Log.d("ChooseAreaFragment", "服务器查询结果:" + result);
                     } else if ("city".equals(queryType)) {
                         result = JsonUtil.parseCityResponse(responseStr, selectedProvince.getId());
                     } else {
